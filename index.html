@@ -70,7 +70,10 @@
     .site-footer a:hover { text-decoration: underline; }
 
     /* —————— Responsive —————— */
-    @media (max-width: 640px) { .form-container { padding: 1.5rem; margin: 1rem; } .form-header h1 { font-size: 1.5rem; } }
+    @media (max-width: 640px) {
+      .form-container { padding: 1.5rem; margin: 1rem; }
+      .form-header h1 { font-size: 1.5rem; }
+    }
   </style>
 </head>
 <body>
@@ -86,7 +89,7 @@
         <p>Complete el siguiente formulario para aplicar a la posición</p>
         <div></div>
       </div>
-      <form id="candidateForm" enctype="multipart/form-data">
+      <form id="candidateForm" enctype="multipart/form-data" novalidate>
         <!-- Campos del formulario -->
         <div class="form-group">
           <label for="nombre_completo">Nombre completo*</label>
@@ -100,22 +103,28 @@
         </div>
         <div class="form-group">
           <label for="cargo">Cargo deseado*</label>
-          <input type="text" id="cargo" name="cargo" placeholder="Ej: Desarrollador Front‑End Senior">
+          <input type="text" id="cargo" name="cargo" placeholder="Ej: Desarrollador Front-End Senior">
           <span class="error" id="cargoError"></span>
         </div>
         <div class="form-group">
           <label for="experiencia">Experiencia profesional*</label>
-          <textarea id="experiencia" name="experiencia" placeholder="Describa su experiencia laboral relevante"></textarea>
+          <textarea id="experiencia" name="experiencia"
+                    placeholder="Describa su experiencia laboral relevante"
+                    minlength="50"></textarea>
           <span class="error" id="experienciaError"></span>
         </div>
         <div class="form-group">
           <label for="habilidades">Habilidades clave*</label>
-          <textarea id="habilidades" name="habilidades" placeholder="Liste sus principales habilidades técnicas y profesionales"></textarea>
+          <textarea id="habilidades" name="habilidades"
+                    placeholder="Liste sus principales habilidades técnicas y profesionales"
+                    minlength="50"></textarea>
           <span class="error" id="habilidadesError"></span>
         </div>
         <div class="form-group">
           <label for="logros">Logros destacados*</label>
-          <textarea id="logros" name="logros" placeholder="Mencione sus principales logros y contribuciones"></textarea>
+          <textarea id="logros" name="logros"
+                    placeholder="Mencione sus principales logros y contribuciones"
+                    minlength="50"></textarea>
           <span class="error" id="logrosError"></span>
         </div>
         <div class="form-group">
@@ -199,7 +208,6 @@
       e.preventDefault();
       clearErrors();
 
-      // Validaciones…
       const nombre      = document.getElementById('nombre_completo').value.trim();
       const email       = document.getElementById('email').value.trim();
       const cargo       = document.getElementById('cargo').value.trim();
@@ -209,13 +217,35 @@
       const imagen      = document.getElementById('imagen').files[0];
       let isValid = true;
 
+      // Validaciones básicas
       if (!nombre)      { showError('nombreError','Por favor ingrese su nombre completo'); isValid = false; }
       if (!email)       { showError('emailError','Por favor ingrese su correo electrónico'); isValid = false; }
       if (!cargo)       { showError('cargoError','Por favor especifique la posición deseada'); isValid = false; }
-      if (!experiencia) { showError('experienciaError','Por favor describa su experiencia'); isValid = false; }
-      if (!habilidades) { showError('habilidadesError','Por favor liste sus habilidades'); isValid = false; }
-      if (!logros)      { showError('logrosError','Por favor mencione sus logros'); isValid = false; }
 
+      // Validaciones de 50 caracteres
+      if (!experiencia) {
+        showError('experienciaError','Por favor describa su experiencia');
+        isValid = false;
+      } else if (experiencia.length < 50) {
+        showError('experienciaError','Debe tener al menos 50 caracteres');
+        isValid = false;
+      }
+      if (!habilidades) {
+        showError('habilidadesError','Por favor liste sus habilidades');
+        isValid = false;
+      } else if (habilidades.length < 50) {
+        showError('habilidadesError','Debe tener al menos 50 caracteres');
+        isValid = false;
+      }
+      if (!logros) {
+        showError('logrosError','Por favor mencione sus logros');
+        isValid = false;
+      } else if (logros.length < 50) {
+        showError('logrosError','Debe tener al menos 50 caracteres');
+        isValid = false;
+      }
+
+      // Validación de imagen
       if (!imagen) {
         showError('imagenError','Por favor seleccione una imagen');
         isValid = false;
@@ -231,8 +261,8 @@
       }
       if (!isValid) return;
 
+      // Si todo es válido, enviamos…
       showLoading();
-
       const formData = new FormData();
       formData.append('nombre', nombre);
       formData.append('email', email);
